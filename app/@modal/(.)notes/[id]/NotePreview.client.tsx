@@ -13,18 +13,30 @@ interface NotePreviewClientProps {
 export default function NotePreviewClient({ id }: NotePreviewClientProps) {
   const router = useRouter();
 
-  const { data: note } = useQuery({
+  const {
+    data: note,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id as string),
     refetchOnMount: false,
   });
 
-  if (!note) {
+  if (isLoading) {
+    return <p>Loading, please wait...</p>;
+  }
+
+  if (isError || !note) {
     return <p>Something went wrong.</p>;
   }
 
   return (
-    <Modal onClose={() => {}}>
+    <Modal
+      onClose={() => {
+        router.back();
+      }}
+    >
       <div className={css.container}>
         <button className={css.backBtn} onClick={() => router.back()}>
           Back
